@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Operating System System Calls Simulator | Ubuntu Linux & C</title>
+  <meta name="description" content="Interactive learning platform and simulator for Operating System concepts and POSIX system calls running on Ubuntu Linux GCC. Demonstrates CO1 to CO6.">
+  
+  <!-- Modern Typography from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">OS</div>
+      <div class="brand-info">
+        <h1>SysCall Simulator</h1>
+        <p>Ubuntu Linux &amp; C Real Kernel Lab</p>
+      </div>
+    </div>
+
+    <nav class="header-nav">
+      <a class="nav-link active" data-view="home" id="navHome">Home Dashboard</a>
+      <a class="nav-link" data-view="studio" id="navStudio">CO-Wise Studio</a>
+      <a class="nav-link" data-view="explorer" id="navExplorer">Syscall Explorer</a>
+      <a class="nav-link" data-view="viva" id="navViva">Viva Exam Bank</a>
+    </nav>
+
+    <div class="header-status">
+      <div class="status-badge" id="hostStatusBadge">
+        <div class="status-pulse"></div>
+        <span id="kernelStatusText">Ubuntu Linux (GCC 15)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="app-container">
+
+    <!-- VIEW 1: HOME DASHBOARD -->
+    <section id="view-home" class="view-section active">
+      <div class="hero-card">
+        <div class="hero-tag">CO1 — CO6 Curriculum Aligned</div>
+        <h2 class="hero-title">Interactive Operating System System Calls Simulator</h2>
+        <p class="hero-description">
+          An interactive laboratory built to explore, understand, and execute fundamental Linux operating system concepts.
+          Every demonstration compiles and runs as real C programs on <strong>Ubuntu Linux</strong> using <strong>GCC</strong>,
+          providing live terminal output, kernel system call tracing (strace), architectural explanations, and viva examination prep.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number">6</div>
+            <div class="stat-label">Course Outcomes (CO1-CO6)</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">26</div>
+            <div class="stat-label">Native C Demonstrations</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">30+</div>
+            <div class="stat-label">POSIX System Calls</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="heroStatUptime">Ubuntu 6.x</div>
+            <div class="stat-label">Real Linux Kernel (WSL2)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Outcomes Roadmaps Grid -->
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Course Outcome <span>Modules</span></h2>
+          <p class="section-subtitle">Select any module to inspect source code, compile live with GCC, and audit kernel traps.</p>
+        </div>
+      </div>
+
+      <div class="co-grid" id="homeCoGrid">
+        <!-- Dynamically populated from /api/modules -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: CO-WISE EXECUTION STUDIO -->
+    <section id="view-studio" class="view-section">
+      <div class="studio-layout">
+        
+        <!-- Left Sidebar: Demonstrations Navigation -->
+        <aside class="studio-sidebar">
+          <h3 class="sidebar-title" id="studioSidebarModuleTitle">Module Demonstrations</h3>
+          <div class="demo-nav-list" id="studioDemoNavList">
+            <!-- Dynamically populated -->
+          </div>
+        </aside>
+
+        <!-- Right: Studio Workspace -->
+        <div class="studio-workspace">
+          
+          <!-- Header Overview Card -->
+          <div class="demo-header-card">
+            <div class="demo-header-info">
+              <h2 id="studioDemoTitle">Select a Demonstration</h2>
+              <p id="studioDemoDesc">Demonstration description will appear here.</p>
+            </div>
+            <div class="demo-header-tags">
+              <span class="module-tag" id="studioModuleTag">CO2: Process Management</span>
+              <span class="demo-nav-diff diff-Beginner" id="studioDiffTag">Beginner</span>
+              <div id="studioSyscallTags" style="display: flex; gap: 0.35rem;"></div>
+            </div>
+          </div>
+
+          <!-- Execution Control Bar -->
+          <div class="execution-bar">
+            <div class="inputs-group">
+              <div class="input-field">
+                <label for="cmdArgsInput">Command-Line Arguments (argv)</label>
+                <input type="text" id="cmdArgsInput" placeholder="e.g. 42 /tmp/demo.txt">
+              </div>
+              <div class="input-field">
+                <label for="stdinInput">Standard Input (stdin)</label>
+                <input type="text" id="stdinInput" placeholder="Input string passed to program">
+              </div>
+            </div>
+
+            <div class="exec-actions">
+              <button class="btn btn-secondary" id="btnResetCode" title="Reset to original C source">Reset Code</button>
+              <button class="btn btn-strace" id="btnToggleStrace" title="Trace system calls with strace">⚡ Trace Syscalls (strace)</button>
+              <button class="btn btn-primary" id="btnRunCode">▶ Compile &amp; Run on Ubuntu (GCC)</button>
+            </div>
+          </div>
+
+          <!-- Code Viewer & Terminal Dual Grid -->
+          <div class="workspace-grid">
+            
+            <!-- Panel 1: Code Viewer & In-Browser Editor -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-tabs">
+                  <button class="panel-tab active">C Source Code (GCC)</button>
+                </div>
+                <div class="panel-actions">
+                  <span style="font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono);">Editable in browser</span>
+                </div>
+              </div>
+              <div class="code-container">
+                <textarea class="code-textarea" id="cCodeTextarea" spellcheck="false" placeholder="/* Loading C Source Code... */"></textarea>
+              </div>
+            </div>
+
+            <!-- Panel 2: Live Ubuntu Output Terminal -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-tabs">
+                  <button class="panel-tab active" data-term-tab="stdout">STDOUT</button>
+                  <button class="panel-tab" data-term-tab="stderr">STDERR</button>
+                  <button class="panel-tab" data-term-tab="compile">GCC Compilation</button>
+                  <button class="panel-tab" data-term-tab="strace">Kernel Syscalls (strace)</button>
+                </div>
+                <div class="panel-actions">
+                  <button class="icon-btn" id="btnCopyOutput" title="Copy output">📋 Copy</button>
+                  <button class="icon-btn" id="btnClearTerminal" title="Clear terminal">🧹 Clear</button>
+                </div>
+              </div>
+
+              <div class="terminal-window" id="terminalWindow">
+                <div class="terminal-prompt">
+                  <span>ubuntu@linux-wsl:~$</span>
+                  <span style="color: var(--text-dim); font-size: 0.75rem;">./a.out</span>
+                </div>
+                <pre class="terminal-output" id="terminalOutputArea">Ready to compile and run on Ubuntu Linux.\nClick 'Compile &amp; Run on Ubuntu' above.</pre>
+              </div>
+
+              <div class="terminal-meta-bar">
+                <div class="meta-status">
+                  <span>Status:</span>
+                  <span class="status-badge" id="terminalStatusBadge">READY</span>
+                </div>
+                <div>
+                  <span>Execution Time:</span>
+                  <strong id="terminalTimerBadge" style="color: var(--accent-cyan); margin-left: 0.35rem;">0.0 ms</strong>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Contextual Interactive Simulator (Memory / Process Trees) -->
+          <div id="extraVisualizerContainer"></div>
+
+          <!-- Deep-Dive Explanations & Execution Flow Accordion -->
+          <div class="tabs-container">
+            <div class="deep-dive-nav">
+              <button class="deep-dive-btn active" data-target="deepDiveExplanation">Kernel Internal Explanation</button>
+              <button class="deep-dive-btn" data-target="deepDiveFlow">Step-by-Step Flow Sequence</button>
+              <button class="deep-dive-btn" data-target="deepDiveViva">Viva Q&amp;A for this Unit</button>
+            </div>
+
+            <!-- Tab 1: Theoretical & Kernel Deep Dive -->
+            <div class="deep-dive-content active" id="deepDiveExplanation">
+              <div id="demoExplanationContent">
+                <p class="explanation-text">Select a demonstration to inspect its kernel mechanics.</p>
+              </div>
+            </div>
+
+            <!-- Tab 2: Visual Step Chain -->
+            <div class="deep-dive-content" id="deepDiveFlow">
+              <div class="diagram-container" id="demoFlowDiagramContainer">
+                <!-- Dynamically populated by DiagramVisualizer -->
+              </div>
+            </div>
+
+            <!-- Tab 3: Unit Viva Questions -->
+            <div class="deep-dive-content" id="deepDiveViva">
+              <div id="demoVivaContainer">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: SYSTEM CALL EXPLORER -->
+    <section id="view-explorer" class="view-section">
+      <div class="explorer-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">POSIX <span>System Call Explorer</span></h2>
+            <p class="section-subtitle">Search, filter, and inspect all system calls across all 6 course outcomes with direct launch shortcuts.</p>
+          </div>
+        </div>
+
+        <div class="search-bar-row">
+          <input type="text" class="search-input" id="explorerSearchInput" placeholder="Search system call (e.g. fork, exec, mmap, pipe, stat, CO3)...">
+        </div>
+
+        <div class="table-responsive">
+          <table class="explorer-table">
+            <thead>
+              <tr>
+                <th>System Call</th>
+                <th>Course Outcome</th>
+                <th>Domain / Subsystem</th>
+                <th>Demonstrations</th>
+              </tr>
+            </thead>
+            <tbody id="explorerTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: COMPREHENSIVE VIVA BANK -->
+    <section id="view-viva" class="view-section">
+      <div class="tabs-container">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Operating Systems <span>Viva Exam Bank</span></h2>
+            <p class="section-subtitle">Comprehensive questions, technical explanations, and examiner tips for all six course outcomes.</p>
+          </div>
+        </div>
+
+        <div id="vivaAllModulesContainer">
+          <!-- Dynamically populated with all CO viva questions -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App Footer -->
+  <footer class="app-footer">
+    <div>
+      <strong>OS System Calls Simulator</strong> — Interactive Operating Systems Learning Platform
+    </div>
+    <div class="footer-tech">
+      <span>Ubuntu Linux</span> • <span>GCC 15 Compiler</span> • <span>POSIX.1-2008</span> • <span>x86-64</span>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/diagrams.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
