@@ -1,20 +1,17 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C compilation artifacts
-*.o
+# Executables
+os_simulator
 *.out
-*.obj
+*.exe
 val_bin
-test_out
+test_build
 
-# Virtual environments
-venv/
-env/
-.env
+# Object files & archives
+*.o
+*.a
+*.so
+*.obj
 
-# OS temporary files
+# Temporary artifacts
+/tmp/
 .DS_Store
 Thumbs.db
