@@ -1,47 +1,34 @@
 #!/bin/bash
 # ==============================================================================
 # run_ubuntu.sh
-# Interactive Operating System System Calls Simulator - Ubuntu Linux Runner
+# Interactive Operating System System Calls Simulator - Pure Ubuntu CLI Edition
 # ==============================================================================
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BACKEND_DIR="$SCRIPT_DIR/backend"
 
-echo "======================================================================"
-echo "    Starting OS System Calls Simulator natively on Ubuntu Linux       "
-echo "======================================================================"
-echo "Directory: $SCRIPT_DIR"
-echo "Kernel:    $(uname -srmo)"
-echo "GCC:       $(gcc --version | head -n 1)"
-echo "Python:    $(python3 --version)"
-echo "----------------------------------------------------------------------"
+echo "Checking Ubuntu Linux environment..."
 
-# Ensure required packages exist
+# 1. Ensure GCC is installed
 if ! command -v gcc &> /dev/null; then
     echo "[!] GCC not found. Installing build-essential..."
     sudo apt-get update && sudo apt-get install -y build-essential
 fi
 
+# 2. Ensure strace is installed
 if ! command -v strace &> /dev/null; then
     echo "[!] strace not found. Installing strace..."
     sudo apt-get update && sudo apt-get install -y strace
 fi
 
-# Check Python Flask dependencies
-if ! python3 -c "import flask, flask_cors" &> /dev/null; then
-    echo "[!] Installing Flask and Flask-CORS in Ubuntu..."
-    sudo apt-get update && sudo apt-get install -y python3-flask python3-flask-cors
+# 3. Ensure python3 is available
+if ! command -v python3 &> /dev/null; then
+    echo "[!] python3 not found. Installing python3..."
+    sudo apt-get update && sudo apt-get install -y python3
 fi
 
-echo "[✓] Environment dependencies verified."
-echo "[*] Launching Flask server on http://localhost:5000 ..."
-echo "----------------------------------------------------------------------"
-echo " Open your web browser and go to:"
-echo "     http://localhost:5000"
-echo " Press CTRL+C to terminate the server."
-echo "======================================================================"
-
-cd "$BACKEND_DIR"
-exec python3 app.py
+# 4. Launch Pure Ubuntu CLI Simulator
+cd "$SCRIPT_DIR"
+chmod +x os_simulator.py
+exec python3 os_simulator.py "$@"
